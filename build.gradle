@@ -1,0 +1,49 @@
+group 'Wildfly'
+version '1.0-SNAPSHOT'
+
+configurations {
+    moreLibs
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url 'https://dl.bintray.com/nikit007/mvn-repo/'
+        }
+    }
+    dependencies {
+        classpath "com.github.nikit.cpp.helpers:db:1.0.7" // need for use helpers.MysqlHelper
+        classpath "gradle.plugin.com.github.nikit.cpp:wildflyDeployPlugin:1.0.8"
+    }
+}
+apply plugin: "com.github.nikit.cpp.wildfly.deploy"
+apply plugin: 'war'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    flatDir { dirs "lib" }
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
+    compile "org.projectlombok:lombok:1.16.10"
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
+    compile "joda-time:joda-time:2.9.4"
+    compile "javax.servlet:servlet-api:2.5"
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+deployConfig {
+    deployFile = "scripts/deploy" // list of files to deploy
+    boxes = [
+            'Local' : [
+                    wildfly:new helpers.Server(username:'dobrebski', password:'mus17S1994', hostname:'localhost')
+            ]
+    ]
+}
